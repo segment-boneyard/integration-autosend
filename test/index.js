@@ -1,6 +1,5 @@
 var Test = require('segmentio-integration-tester');
 var Autosend = require('../');
-var mapper = require('../mapper');
 
 describe('Autosend', function(){
   var autosend;
@@ -8,10 +7,12 @@ describe('Autosend', function(){
   var test;
 
   beforeEach(function(){
-    settings = { apiKey: 'key' };
+    settings = {
+      apiKey: '8e0c3a35837b43c88f1c135294a65896',
+      apiSecret: '859371e394824264bc314fe7c2def4cc'
+    };
     autosend = new Autosend(settings)
     test = Test(autosend, __dirname);
-    test.mapper(mapper);
   });
 
   it('should have the correct settings', function(){
@@ -19,10 +20,11 @@ describe('Autosend', function(){
       .name('Autosend')
       .channels(['server', 'mobile', 'client'])
       .ensure('settings.apiKey')
+      .ensure('settings.apiSecret')
       .retries(2);
   });
 
-  describe('.validate()', function() {
+  describe('.validate()', function(){
     it('should not be valid without an api key', function(){
       delete settings.apiKey;
       test.invalid({}, settings);
@@ -30,20 +32,6 @@ describe('Autosend', function(){
 
     it('should be valid with complete settings', function(){
       test.valid({}, settings);
-    });
-  });
-
-  describe('mapper', function(){
-    describe('identify', function(){
-      it('should map basic identify', function(){
-        test.maps('identify-basic');
-      });
-    });
-
-    describe('track', function(){
-      it('should map basic track', function(){
-        test.maps('track-basic');
-      });
     });
   });
 
@@ -64,7 +52,7 @@ describe('Autosend', function(){
       test
         .set({ apiKey: 'x' })
         .identify(json.input)
-        .error('error message', done);
+        .error('cannot PUT /api/v1/customers/user-id (401)', done);
     });
   });
 
@@ -85,7 +73,7 @@ describe('Autosend', function(){
       test
         .set({ apiKey: 'x' })
         .track(json.input)
-        .error('error message', done);
+        .error('cannot POST /api/v1/customers/345/track (401)', done);
     });
   });
 });
